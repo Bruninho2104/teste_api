@@ -1,6 +1,8 @@
 package teste.api;
 
+import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.isA;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.CoreMatchers.nullValue;
 
@@ -180,4 +182,65 @@ public class ValidarMetodoPost {
 			.body("createdAt", notNullValue())
 			.body("id", notNullValue());
 	}
+	
+	@Test
+	public void validarRequisicaoComEstruturaErrada() {
+		Object teste = new Object();
+		jsonBody.put("name", teste);
+		jsonBody.put("job", "QA");
+		
+		given()
+			.header("Content-Type", "application/json")
+			.body(jsonBody.toJSONString())
+		
+		.when()
+			.post(url)
+	
+		.then()
+			.statusCode(400)
+			.statusLine(containsString("Bad Request"));
+	}
+	
+	@Test
+	public void validarStatusCodeDaRequisicao() {
+		String name = "Bruno";
+		String job = "QA";
+		jsonBody.put("name", name);
+		jsonBody.put("job", job);
+		
+		given()
+			.header("Content-Type", "application/json")
+			.body(jsonBody.toJSONString())
+		
+		.when()
+			.post(url)
+	
+		.then()
+			.statusCode(201)
+			.statusLine(containsString("Created"));
+	}
+	
+	@Test
+	public void validarContratoDaRequisicao() {
+		String name = "Bruno";
+		String job = "QA";
+		jsonBody.put("name", name);
+		jsonBody.put("job", job);
+		
+		given()
+			.header("Content-Type", "application/json")
+			.body(jsonBody.toJSONString())
+		
+		.when()
+			.post(url)
+	
+		.then()
+			.statusCode(201)
+			.header("Content-Type", containsString("application/json"))
+			.body("name", isA(String.class))
+			.body("job", isA(String.class))
+			.body("id", isA(String.class))
+			.body("createdAt", isA(String.class));
+	}
+	
 }
